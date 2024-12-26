@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
-use App\Models\User;
 
 // Assignment
 /*
@@ -13,9 +14,14 @@ use App\Models\User;
 ถ้าจะดูรายละเอียดสินค้า show ต้องผ่าน Authentication
 */
 
+
+
 Route::get('/', function () {
-    return view('welcome');
+    return Inertia::render('Welcome'); // กำหนดให้โหลดหน้า Welcome
 });
+
+Route::middleware('auth')->get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
+//Route::middleware(['auth'])->get('/product/{id}', [ProductController::class, 'show']);
 
 Route::get('/greeting', function () {
     return 'Hello World';
@@ -26,14 +32,17 @@ Route::get('/greeting', function () {
 });*/
 
 Route::get('/users/{user}', [UserController::class, 'show']);
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 
-Route::get('/products', [ProductController::class, 'index']);
-Route::get('/products/{id}', [ProductController::class, 'show']);
+Route::middleware(['auth'])->group(function () {
+    
+    Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
+});
 
 Route::get('/user', [UserController::class, 'index'])->name('CSMJU');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return Inertia::render('Dashboard'); // เปลี่ยนเป็น Inertia::render
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
